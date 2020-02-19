@@ -1,0 +1,76 @@
+@page
+@model IndexModel
+@using Microsoft.AspNetCore.Mvc.RazorPages
+@using Microsoft.AspNetCore.Http;
+
+@functions {
+    public class IndexModel : PageModel
+    {
+        public string emailMessage { get; set; } = "Logged in as: NONE";
+        public string changeIdMessage {get;set;} = "";
+
+        public string addIdMessage {get;set;} = "";
+        public string deleteIdMessage {get;set;} = "";
+
+        public string email {get;set;} = "";
+        public Boolean login {get;set;}= false;
+
+        public void OnPostEdit(string changeIdIn, string changeQty, string delTitle, string addTitle, string addAuthor)
+        {
+            //ID message
+            changeInventory(changeIdIn, changeQty, delTitle, addTitle, addAuthor);
+        }
+        public void OnGetAsync(){
+            email = HttpContext.Session.GetString("_Email");
+            emailMessage = $"Logged in as: {email}"; 
+        }
+
+        public void changeInventory(string changeIdIn, string changeQty, string delTitle, string addTitle, string addAuthor){
+            if(!String.IsNullOrEmpty(changeIdIn) && !String.IsNullOrEmpty(changeQty)){
+                changeIdMessage = "Added " + changeQty + " of book " + changeIdIn;
+            }
+            if(!String.IsNullOrEmpty(delTitle)){
+                deleteIdMessage = "Deleted title: " + delTitle;
+            }
+            if(!String.IsNullOrEmpty(addTitle)){
+                addIdMessage = "Added title: " + addTitle;
+            } 
+            }
+    }
+}
+
+<h2 class = "text-center">LIBRARY APPLICATION - Edit Inventory</h2>
+<hr/>
+<div class = "text-right">
+<p>@Model.emailMessage</p>
+</div>
+<form asp-page-handler="edit" method="post"> 
+    <div class = "text-center">
+    <!-- Edit Inventory -->
+        <h5>Edit Inventory:</h5>
+        <!-- Change Quantity -->
+        <h6>Change Quantity</h6>
+        <label>Book ID:</label>
+        <input type = "text" name = "changeIdIn"/>
+        <label>QTY to Add:</label>
+        <input type = "text" name = "changeQty"/>
+        <button>Submit</button>
+        <!-- Delete Book -->
+        <h6>Delete Book</h6>
+        <label>Title:</label>
+        <input type = "text" name = "delTitle"/>
+        <button>Submit</button>
+        <!-- Add Book -->
+        <h6>Add Book</h6>
+        <label>Title:</label>
+        <input type = "text" name = "addTitle"/>
+        <label>Author(s):</label>
+        <input type = "text" name = "addAuthor"/>
+        <button>Submit</button>
+        <br/><br/>
+        <p>@Model.changeIdMessage</p>
+        <p>@Model.deleteIdMessage</p>
+        <p>@Model.addIdMessage</p>
+    </div>
+    <hr/>
+</form>

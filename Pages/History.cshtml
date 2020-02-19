@@ -1,0 +1,51 @@
+@page
+@model IndexModel
+@using Microsoft.AspNetCore.Mvc.RazorPages
+@using Microsoft.AspNetCore.Http;
+
+
+@functions {
+    public class IndexModel : PageModel
+    {
+        public string emailMessage { get; set; } = "Logged in as: NONE";
+        public string historyIdMessage { get; set; } = "";
+        public string email {get;set;} = "";
+        public string historyId {get;set;} = "";
+
+        public void OnGetAsync(){
+            email = HttpContext.Session.GetString("_Email");
+            emailMessage = $"Logged in as: {email}"; 
+        }
+        public void OnPostEdit(string historyIdIn)
+        {
+            //book history message
+            changeHistory(historyIdIn);
+        }
+
+        public void changeHistory(string historyIdIn){
+            if (string.IsNullOrEmpty(historyIdIn)){
+                historyId = this.historyId;            
+                }
+            else{
+                historyId = historyIdIn;
+            }
+            historyIdMessage = $"(Book #{historyId})";
+        }
+    
+    }
+}
+
+<h2 class = "text-center">LIBRARY APPLICATION - History</h2>
+<hr/>
+<div class = "text-right">
+<p>@Model.emailMessage</p>
+</div>
+<form asp-page-handler="edit" method="post"> 
+    <div class = "text-center">
+    <!-- Login/logout -->
+        <h5>Show history: @Model.historyIdMessage</h5>
+        <label>Book ID:</label>
+        <input type = "text" name = "historyIdIn"/>
+        <button>Submit</button>
+    </div>
+</form>

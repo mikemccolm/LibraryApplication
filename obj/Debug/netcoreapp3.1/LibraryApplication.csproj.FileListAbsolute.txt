@@ -22,7 +22,6 @@ C:\Users\mikem\Documents\home\GITSTUFF\LibraryApplication\obj\Debug\netcoreapp3.
 C:\Users\mikem\Documents\home\GITSTUFF\LibraryApplication\obj\Debug\netcoreapp3.1\LibraryApplication.RazorCoreGenerate.cache
 C:\Users\mikem\Documents\home\GITSTUFF\LibraryApplication\obj\Debug\netcoreapp3.1\Razor\Pages\Error.cshtml.g.cs
 C:\Users\mikem\Documents\home\GITSTUFF\LibraryApplication\obj\Debug\netcoreapp3.1\Razor\Pages\Index.cshtml.g.cs
-C:\Users\mikem\Documents\home\GITSTUFF\LibraryApplication\obj\Debug\netcoreapp3.1\Razor\Pages\Privacy.cshtml.g.cs
 C:\Users\mikem\Documents\home\GITSTUFF\LibraryApplication\obj\Debug\netcoreapp3.1\Razor\Pages\Shared\_Layout.cshtml.g.cs
 C:\Users\mikem\Documents\home\GITSTUFF\LibraryApplication\obj\Debug\netcoreapp3.1\Razor\Pages\Shared\_ValidationScriptsPartial.cshtml.g.cs
 C:\Users\mikem\Documents\home\GITSTUFF\LibraryApplication\obj\Debug\netcoreapp3.1\Razor\Pages\_ViewImports.cshtml.g.cs
@@ -33,3 +32,9 @@ C:\Users\mikem\Documents\home\GITSTUFF\LibraryApplication\obj\Debug\netcoreapp3.
 C:\Users\mikem\Documents\home\GITSTUFF\LibraryApplication\obj\Debug\netcoreapp3.1\LibraryApplication.dll
 C:\Users\mikem\Documents\home\GITSTUFF\LibraryApplication\obj\Debug\netcoreapp3.1\LibraryApplication.pdb
 C:\Users\mikem\Documents\home\GITSTUFF\LibraryApplication\obj\Debug\netcoreapp3.1\LibraryApplication.csproj.CopyComplete
+C:\Users\mikem\Documents\home\GITSTUFF\LibraryApplication\obj\Debug\netcoreapp3.1\Razor\Pages\Register.cshtml.g.cs
+C:\Users\mikem\Documents\home\GITSTUFF\LibraryApplication\obj\Debug\netcoreapp3.1\Razor\Pages\Checkout.cshtml.g.cs
+C:\Users\mikem\Documents\home\GITSTUFF\LibraryApplication\obj\Debug\netcoreapp3.1\Razor\Pages\Display.cshtml.g.cs
+C:\Users\mikem\Documents\home\GITSTUFF\LibraryApplication\obj\Debug\netcoreapp3.1\Razor\Pages\History.cshtml.g.cs
+C:\Users\mikem\Documents\home\GITSTUFF\LibraryApplication\obj\Debug\netcoreapp3.1\Razor\Pages\Inventory.cshtml.g.cs
+C:\Users\mikem\Documents\home\GITSTUFF\LibraryApplication\obj\Debug\netcoreapp3.1\Razor\Pages\Login.cshtml.g.cs

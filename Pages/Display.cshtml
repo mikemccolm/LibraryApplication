@@ -1,0 +1,33 @@
+@page
+@model IndexModel
+@using Microsoft.AspNetCore.Mvc.RazorPages
+@using Microsoft.AspNetCore.Http;
+
+
+@functions {
+    public class IndexModel : PageModel
+    {
+        public string emailMessage { get; set; } = "Logged in as: NONE";
+        public string historyIdMessage { get; set; } = "";
+        public string changeIdMessage {get;set;} = "";
+
+        public string addIdMessage {get;set;} = "";
+        public string deleteIdMessage {get;set;} = "";
+
+
+        public string returnIdMessage{get;set;} = "";
+        public string takeoutIdMessage{get;set;} = "";
+        public string email {get;set;} = "";
+        public string historyId {get;set;} = "";
+        public Boolean login {get;set;}= false;
+
+        public void OnGetAsync(){
+            email = HttpContext.Session.GetString("_Email");
+            emailMessage = $"Logged in as: {email}"; 
+        }
+
+
+    }
+}
+
+<h2 class = "text-center">LIBRARY APPLICATION - Display</h2>
