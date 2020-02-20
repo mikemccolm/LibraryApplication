@@ -1,0 +1,8 @@
+The database was constructed using Google's real time Firebase database.
+There are two tables used, Work and Book.
+Work represents a writing of a book, (i.e. Lord of The Rings, Harry Potter, Great Gatsby)
+Book represents a physcial copy of a book, and is given a unique ID.
+The two pictures in this directory show the schema using examples I created.
+
+Additionally, I've made the database publicly accessible for convenience, it should be able to be accessed by the following link:
+https://console.firebase.google.com/u/0/project/library-application-5c7df/database/library-application-5c7df/data

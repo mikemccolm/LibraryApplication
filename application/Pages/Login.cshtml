@@ -1,0 +1,49 @@
+@page
+@model IndexModel
+@using Microsoft.AspNetCore.Mvc.RazorPages
+@using Microsoft.AspNetCore.Http;
+
+@functions {
+    public class IndexModel : PageModel
+    {
+        public string emailMessage { get; set; } = "Logged in as: NONE";
+        public string email {get;set;} = "";
+        public void OnPostEdit(string emailIn)
+        {
+            //change email and set cookie to maintain between pages based on input
+            HttpContext.Session.SetString("_Email", emailIn);
+            changeEmail(emailIn);
+         }
+        public void OnGetAsync(){
+            //get existing email
+            email = HttpContext.Session.GetString("_Email");
+            emailMessage = $"Logged in as: {email}"; 
+        }
+        public void changeEmail(string emailIn){
+            //change email based on form submit
+            if (string.IsNullOrEmpty(emailIn)){
+                email = email;
+            }
+            else{
+                email = emailIn;
+            }
+            emailMessage = $"Logged in as: {email}";
+        }
+    }
+}
+
+<h2 class = "text-center">LIBRARY APPLICATION - Login</h2>
+<hr/>
+<div class = "text-right">
+<p>@Model.emailMessage</p>
+</div>
+<form asp-page-handler="edit" method="post"> 
+    <div class = "text-center">
+    <!-- Change email-->
+        <h5>Please enter your email below to continue:</h5>
+        <label>Email:</label>
+        <input type = "email" name = "emailIn"/>
+        <button>Submit</button>
+    </div>
+    <hr/>
+</form>

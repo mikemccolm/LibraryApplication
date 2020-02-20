@@ -1,0 +1,35 @@
+Library Application - User Guide
+
+In addition to the initial home page, which doesn't contain information, there are five other pages with functionality. They should be
+accessed using the navbar at the top of the screen, and clicking on the desired page. 
+
+1. Login
+This page is only meant for the user to enter their email to gain access to all functionality. Type email inbox, press submit, and a confirmation
+will appear.
+
+2. Checkout
+This page is meant for the user to check out or return books. First, they must have logged in. Then, assuming the library functions on a barcode
+system(each is unique), unique book numbers are assigned. There is a box for checkout and return, where this 9 digit ID can be entered. From this,
+the system will make the necessary changes to the database.
+
+3. Display
+This page show all books in the library. Using the dropdown menus, the user can sort by author, title (ascending and descending), or filter by
+book status (All, Available, taken out by logged in user). Their choices can be entered through the submit button. When this is submitted, the
+display changes.
+
+4. History
+The history page allows a user to input a book's ID (as this is the only unique identifier/primary key possible). Once inputted, if the record 
+exists in the database, the history will be retrieved and outputted below. If the book doesn't exist, the screen will display this as well.
+
+5. Inventory
+The inventory page allows changing of the library's selection. There are three sub-functionalities on this page:
+    -Change Quantity:
+    Input space for title, quantity, and select ADD or DELETE. Note: quantity should be entered as a positive integer (1,2,3), as this is the
+    functionality supported. Additional copies of the title are then either added or deleted depending on the status of the dropdown menu.
+
+    -Delete Book:
+    Input space for title. Once submitted, the library will no longer 'carry' that book, and any physical copies of the book will be deleted.
+
+    -Add Book:
+    Input space for title and author(s). Once submitted, new records are created in the database, marking that the libary 'carries' that book, but
+    no physical copies are added.

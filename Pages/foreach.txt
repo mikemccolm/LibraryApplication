@@ -1,4 +1,0 @@
-        @foreach (var person in @Model.history)
-        {
-        <p>@person</p>
-        }

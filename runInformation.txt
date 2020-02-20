@@ -1,0 +1,7 @@
+RUN INFORMATION
+
+The application can be 'installed' and run simply by executing 'dotnet run' in the command line in the /application directory.
+The application was created on Windows OS, using version 3.1.1, but should work in other environments as well.
+Additionally, external libraries were used: Firesharp, Mailkit, Http. They are used to interact with the database, send emails, and save
+in cookies.
+They should be able to be installed using dotnet install Firesharp, dotnet install Mailkit etc.
