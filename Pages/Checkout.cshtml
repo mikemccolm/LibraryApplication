@@ -2,8 +2,29 @@
 @model IndexModel
 @using Microsoft.AspNetCore.Mvc.RazorPages
 @using Microsoft.AspNetCore.Http;
+@using MailKit.Net.Smtp;
+@using MailKit;
+@using MimeKit;
+@using FireSharp.Config;
+@using FireSharp.Interfaces;
+@using FireSharp.Response
 
 @functions {
+    public class Book{
+        public string id = "";
+        public string status = "";
+        public string title = "";
+        public string author = "";
+        public string history = "";
+        public void setVals(string idIn, string titleIn, string authorIn, string statusIn, string historyIn){
+            id = idIn;
+            title = titleIn;
+            history = historyIn;
+            author = authorIn;
+            status = statusIn;
+        }
+
+    }
     public class IndexModel : PageModel
     {
         public string email {get;set;} = "";
@@ -20,15 +41,72 @@
             email = HttpContext.Session.GetString("_Email");
             emailMessage = $"Logged in as: {email}";
             //take out/return
-            returnBook(returnId, takeoutId);
+            if (!String.IsNullOrEmpty(email)){
+                returnBook(returnId, takeoutId);
+            } 
         }
+        public void sendEmail(string title, string email){
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress("Library-Application","emailsender974@gmail.com"));
+            message.To.Add(new MailboxAddress("User", "booleafs17@yahoo.ca")); //change this to email
+            message.Subject = "Book Notification";
+            message.Body = new TextPart("plain"){
+                Text = "You took out the following book: " + title + ". Please return it within 7 days."
+            };
+
+            using (var client = new SmtpClient()){
+                client.Connect("smtp.gmail.com",587,false);
+                client.Authenticate("emailsender974@gmail.com","emailsend");
+                client.Send(message);
+                client.Disconnect(true);
+            }
+        }
+
         
-        public void returnBook(string returnId, string takeoutId){
+        public async Task returnBook(string returnId, string takeoutId){
+            IFirebaseConfig config = new FirebaseConfig
+            {
+                AuthSecret = "1YwwPshIwO1oaE0PgpyCJc7cG5CMezZovmE7TDTw",
+                BasePath = "https://library-application-5c7df.firebaseio.com/"
+            };
+            IFirebaseClient client;
+            client = new FireSharp.FirebaseClient(config);
             if(!String.IsNullOrEmpty(returnId)){
-                returnIdMessage = $"(Successfully returned #{returnId})";
+                try{
+                    returnIdMessage = $"(Successfully returned #{returnId})";
+                    FirebaseResponse response = await client.GetAsync("Books/"+returnId);
+                    Book obj = response.ResultAs<Book>();
+                    //(string idIn, string titleIn, string authorIn, string statusIn, string historyIn)
+                    string id = obj.id;
+                    string status = "";
+                    string author = obj.author;
+                    string title = obj.title;
+                    string history = obj.history + ", Returned: " + DateTime.Now + " | ";
+                    Book b1 = new Book();
+                    b1.setVals(id,status,author,title,history);
+                    await client.SetAsync("Books/"+returnId,b1);
+                }
+                catch(NullReferenceException ex){
+                    returnIdMessage = "Could not find record";
+                }
+
             }
             if(!String.IsNullOrEmpty(takeoutId)){
                 takeoutIdMessage = $"(Successfully took out #{takeoutId})";
+                FirebaseResponse response = await client.GetAsync("Books/"+takeoutId);
+                Book obj = response.ResultAs<Book>();
+                if(String.IsNullOrEmpty(obj.status)){
+                    string id = obj.id;
+                    string status = email;
+                    string author = obj.author;
+                    string title = obj.title;
+                    string history = obj.history + " User: " + email + ", Taken Out: " + DateTime.Now; 
+                    Book b1 = new Book();
+                    b1.setVals(id,status,author,title,history);
+                    await client.SetAsync("Books/"+takeoutId,b1);
+                    sendEmail(title, email);
+                    }
+
             }
         }
     }

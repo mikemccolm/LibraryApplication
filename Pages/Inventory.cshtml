@@ -2,8 +2,40 @@
 @model IndexModel
 @using Microsoft.AspNetCore.Mvc.RazorPages
 @using Microsoft.AspNetCore.Http;
+@using FireSharp.Config;
+@using FireSharp.Interfaces;
+@using FireSharp.Response
 
 @functions {
+    public class Work{
+        public string authors = "";
+        public string title = "";
+        public List<string> copies = new List<string>();
+        public void setValsAdd(string authorsIn, string titleIn, List<string> copiesIn){
+            authors = authorsIn;
+            title = titleIn;
+            copies = copiesIn;
+            if (copies.Count == 0){
+                copies.Add("0");
+            }
+        }
+    }
+    public class Book{
+        public string id = "";
+        public string status = "";
+        public string title = "";
+        public string author = "";
+        public string history = "";
+        public void setVals(string idIn, string titleIn, string authorIn){
+            Console.WriteLine(titleIn);
+            id = idIn;
+            title = titleIn;
+            history = ".";
+            author = authorIn;
+
+        }
+
+    }
     public class IndexModel : PageModel
     {
         public string emailMessage { get; set; } = "Logged in as: NONE";
@@ -13,29 +45,86 @@
         public string deleteIdMessage {get;set;} = "";
 
         public string email {get;set;} = "";
-        public Boolean login {get;set;}= false;
-
-        public void OnPostEdit(string changeIdIn, string changeQty, string delTitle, string addTitle, string addAuthor)
+        public void OnPostEdit(string changeTitle, string changeQty, string delTitle, string addTitle, string addAuthor, string way)
         {
             //ID message
-            changeInventory(changeIdIn, changeQty, delTitle, addTitle, addAuthor);
+            changeInventory(changeTitle, changeQty, delTitle, addTitle, addAuthor, way);
         }
         public void OnGetAsync(){
             email = HttpContext.Session.GetString("_Email");
             emailMessage = $"Logged in as: {email}"; 
         }
 
-        public void changeInventory(string changeIdIn, string changeQty, string delTitle, string addTitle, string addAuthor){
-            if(!String.IsNullOrEmpty(changeIdIn) && !String.IsNullOrEmpty(changeQty)){
-                changeIdMessage = "Added " + changeQty + " of book " + changeIdIn;
+        public void changeInventory(string changeTitle, string changeQty, string delTitle, string addTitle, string addAuthor,string way){
+            if(!String.IsNullOrEmpty(changeTitle) && !String.IsNullOrEmpty(changeQty)){
+                changeIdMessage = "Added " + changeQty + " of book " + changeTitle;
+                dbWrite(1,changeTitle,"",changeQty,way);
             }
             if(!String.IsNullOrEmpty(delTitle)){
                 deleteIdMessage = "Deleted title: " + delTitle;
+                dbWrite(2,delTitle,"","","");
             }
             if(!String.IsNullOrEmpty(addTitle)){
                 addIdMessage = "Added title: " + addTitle;
+                dbWrite(3,addTitle, addAuthor,"","");
             } 
+        }
+         public async void dbWrite(int action, string title, string author, string qty, string way){
+            IFirebaseConfig config = new FirebaseConfig
+            {
+                AuthSecret = "1YwwPshIwO1oaE0PgpyCJc7cG5CMezZovmE7TDTw",
+                BasePath = "https://library-application-5c7df.firebaseio.com/"
+            };
+            IFirebaseClient client;
+            client = new FireSharp.FirebaseClient(config);
+            if (action == 1){
+                Random rnd = new Random();
+                FirebaseResponse response = await client.GetAsync("Works/"+title);
+                Work obj = response.ResultAs<Work>();
+                List<string> tempCopies = new List<string>();
+                for (int i = 0;i<obj.copies.Count;i++){
+                    tempCopies.Add(obj.copies[i]);
+                }
+                var q = Convert.ToInt32(qty); // returns short
+                Console.WriteLine(way);
+                if (way.Equals("add"))
+                {
+                    for (int i = 0;i<q;i++){
+                        var tempID = rnd.Next(100000000,999999999);
+                        tempCopies.Add(tempID.ToString());
+                        var data2 = new Book();
+                        data2.setVals(tempID.ToString(),title, obj.authors);
+                        SetResponse response2 = await client.SetAsync("Books/"+tempID.ToString(),data2);
+                    }
+                }
+                else if (way.Equals("del") && q<=obj.copies.Count-1){
+                    for (int i = 0;i<Math.Abs(q);i++){
+                        var tempID = tempCopies[1];
+                        await client.DeleteAsync("Books/"+tempID);
+                        tempCopies.RemoveAt(1);
+                    }
+                }
+                var data = new Work();
+                data.setValsAdd(obj.authors, title,tempCopies);
+                SetResponse response3 = await client.SetAsync("Works/"+title,data);
             }
+            else if (action ==2){
+                FirebaseResponse response = await client.GetAsync("Works/"+title);
+                Work obj = response.ResultAs<Work>();
+                for (int i = 1;i<obj.copies.Count;i++){
+                    await client.DeleteAsync("Books/"+obj.copies[i]);
+                }
+                await client.DeleteAsync("Works/"+title);
+            }
+            else if(action == 3){
+                var data = new Work();
+                List<string> copies = new List<string>();
+                data.setValsAdd(author, title,copies);
+                SetResponse response = await client.SetAsync("Works/"+title,data);
+                Work result = response.ResultAs<Work>();  
+            }
+     
+        }
     }
 }
 
@@ -50,10 +139,14 @@
         <h5>Edit Inventory:</h5>
         <!-- Change Quantity -->
         <h6>Change Quantity</h6>
-        <label>Book ID:</label>
-        <input type = "text" name = "changeIdIn"/>
-        <label>QTY to Add:</label>
+        <label>Title:</label>
+        <input type = "text" name = "changeTitle"/>
+        <label>QTY:</label>
         <input type = "text" name = "changeQty"/>
+        <select name = "way">
+            <option value = "add">ADD</option>
+            <option value = "del">DELETE</option>
+        </select>
         <button>Submit</button>
         <!-- Delete Book -->
         <h6>Delete Book</h6>

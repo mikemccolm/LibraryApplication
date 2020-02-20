@@ -2,24 +2,45 @@
 @model IndexModel
 @using Microsoft.AspNetCore.Mvc.RazorPages
 @using Microsoft.AspNetCore.Http;
+@using FireSharp.Config;
+@using FireSharp.Interfaces;
+@using FireSharp.Response
 
 
 @functions {
+    public class Book{
+        public string id = "";
+        public string status = "";
+        public string title = "";
+        public string author = "";
+        public string history = "";
+        public void setVals(string idIn, string titleIn, string authorIn){
+            id = idIn;
+            title = titleIn;
+            history = ".";
+            author = authorIn;
+        }
+    }
     public class IndexModel : PageModel
     {
         public string emailMessage { get; set; } = "Logged in as: NONE";
         public string historyIdMessage { get; set; } = "";
         public string email {get;set;} = "";
         public string historyId {get;set;} = "";
+        public string displayHistory{get;set;} = "";
+        public string displayIntro{get;set;} = "";
+        public string displayTitle{get;set;} = "";
+        public string displayAuthor{get;set;} = "";
 
         public void OnGetAsync(){
             email = HttpContext.Session.GetString("_Email");
             emailMessage = $"Logged in as: {email}"; 
         }
-        public void OnPostEdit(string historyIdIn)
+        public async Task OnPostEdit(string historyIdIn)
         {
             //book history message
             changeHistory(historyIdIn);
+            await dbConnect(historyIdIn);
         }
 
         public void changeHistory(string historyIdIn){
@@ -31,6 +52,27 @@
             }
             historyIdMessage = $"(Book #{historyId})";
         }
+
+        public async Task dbConnect(string historyId){
+            IFirebaseConfig config = new FirebaseConfig
+            {
+                AuthSecret = "1YwwPshIwO1oaE0PgpyCJc7cG5CMezZovmE7TDTw",
+                BasePath = "https://library-application-5c7df.firebaseio.com/"
+            };
+            IFirebaseClient client;
+            client = new FireSharp.FirebaseClient(config);
+            try{
+                FirebaseResponse response = await client.GetAsync("Books/"+historyId);
+                Book obj = response.ResultAs<Book>();
+                displayHistory = "History: " + obj.history;
+                displayIntro = "Showing history for book with ID: " + historyId;
+                displayAuthor = "Author(s): " + obj.author;
+                displayTitle = "Title: " + obj.title;   
+            }
+            catch(NullReferenceException ex){
+                displayIntro = "Book not found: (#" + historyId +") - please enter valid ID.";
+            }    
+            }
     
     }
 }
@@ -49,3 +91,10 @@
         <button>Submit</button>
     </div>
 </form>
+<div class = "text-center">
+    <br/><br/>
+    <p>@Model.displayIntro</p>
+    <P>@Model.displayTitle</P>
+    <p>@Model.displayAuthor</p>
+    <p>@Model.displayHistory</p>
+</div>
